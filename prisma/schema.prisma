@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+  name String
+  draws Draw[]
+  courses Course[]
+  subscriptions Course[]
+  likedDraws Draw[]
+  userSugestions SugestionUser[]
+  isAdvancedUser Boolean
+}
+
+model File {
+  id String @id @default(uuid())
+  name String
+  type String
+  data Bytes
+  date DateTime
+}
+
+model Draw{
+  id String @id @default(uuid())
+  name String
+  sizeX Int
+  sizeY Int
+  date DateTime
+  theme String
+  author String
+  genre String
+  pic File
+  reported Boolean
+}
+
+
+model Tip {
+  id String @id @default(uuid())
+  category TipType 
+  value String 
+}
+
+model SugestionUser {
+  id String @id @default(uuid())
+  sugestion Sugestion
+  user User
+  status SugestionStatus
+}
+
+model Sugestion {
+  id String @id @default(uuid())
+  value String
+  reported Boolean
+}
+
+model Activity {
+  id String @id @default(uuid())
+  name String
+  description String
+  annex File[]
+  class File
+}
+
+model Course {
+  id String @id @default(uuid())
+  name String
+  description String
+  date DateTime
+  workload Int
+  audience Audience
+  teacher User
+  materials File[]
+  classes File[]
+  students User[]
+  activities Activity[]
+  reported Boolean
+}
+
+enum SugestionStatus {
+  ACCEPT
+  DENY
+  WAITING
+}
+
+
+enum TipType {
+  PERSPECTIVE
+  SHAPES
+  ANATHOMY
+  COLOR
+  LIGHTANDSHADOW
+  OTHER
+}
+ enum Audience {
+  BEGINNER 
+  INTERMEDIATE 
+  ADVANCED 
+  ALL 
+}

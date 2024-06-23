@@ -1,0 +1,6 @@
+export enum Audience {
+  BEGINNER = 'BEGINNER',
+  INTERMEDIATE = 'INTERMEDIATE',
+  ADVANCED = 'ADVANCED',
+  ALL = 'ALL',
+}
