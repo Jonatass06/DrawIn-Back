@@ -1,15 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ConnectorRepository } from 'src/connector/conector.repository';
 
 @Injectable()
 export class UserService {
+  constructor(private conector: ConnectorRepository) {}
+
   create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+    const user = {
+      name: createUserDto.name,
+      isAdvancedUser: false,
+    };
+    return this.conector.create('user', user);
   }
 
   findAll() {
-    return `This action returns all user`;
+    return this.conector.findMany('user'); 
   }
 
   findOne(id: number) {

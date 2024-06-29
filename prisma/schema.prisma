@@ -11,98 +11,135 @@ datasource db {
 }
 
 model User {
-  id String @id @default(uuid())
-  name String
-  draws Draw[]
-  courses Course[]
-  subscriptions Course[]
-  likedDraws Draw[]
-  userSugestions SugestionUser[]
+  id             String          @id @default(uuid())
+  name           String
+  draws          Draw[]          @relation(name: "UserDraws")
+  courses        Course[]        @relation(name: "UserCourses")
+  subscriptions  Course[]        @relation(name: "UserSubscriptions")
+  likedDraws     Draw[]          @relation(name: "UserLikedDraws")
+  userSugestions SugestionUser[] @relation(name: "UserSugestions")
   isAdvancedUser Boolean
 }
 
 model File {
-  id String @id @default(uuid())
-  name String
-  type String
-  data Bytes
-  date DateTime
+  id              String            @id @default(uuid())
+  name            String
+  type            String
+  data            Bytes
+  date            DateTime
+  ActivityAnnex   ActivityAnnex[]
+  CourseMaterials CourseMaterials[]
+  CourseClasses   CourseClasses[]
+  Draw            Draw[]
+  Activity        Activity[]
 }
 
-model Draw{
-  id String @id @default(uuid())
-  name String
-  sizeX Int
-  sizeY Int
-  date DateTime
-  theme String
-  author String
-  genre String
-  pic File
+model ActivityAnnex {
+  id         String   @id @default(uuid())
+  file       File     @relation(fields: [fileId], references: [id])
+  activity   Activity @relation(name: "ActivityAnnex", fields: [activityId], references: [id])
+  fileId     String
+  activityId String
+}
+
+model CourseMaterials {
+  id       String @id @default(uuid())
+  file     File   @relation(fields: [fileId], references: [id])
+  course   Course @relation(name: "CourseMaterials", fields: [courseId], references: [id])
+  fileId   String
+  courseId String
+}
+
+model CourseClasses {
+  id       String @id @default(uuid())
+  file     File   @relation(fields: [fileId], references: [id])
+  course   Course @relation(name: "CourseClasses", fields: [courseId], references: [id])
+  fileId   String
+  courseId String
+}
+
+model Draw {
+  id       String   @id @default(uuid())
+  likedBy  User[]   @relation(name: "UserLikedDraws")
+  name     String
+  sizeX    Int
+  sizeY    Int
+  date     DateTime
+  theme    String
+  author   User     @relation(name: "UserDraws", fields: [userId], references: [id])
+  genre    String
+  pic      File     @relation(fields: [fileId], references: [id])
   reported Boolean
+  userId   String
+  fileId   String
 }
-
 
 model Tip {
-  id String @id @default(uuid())
-  category TipType 
-  value String 
+  id       String @id @default(uuid())
+  category String
+  value    String
 }
 
 model SugestionUser {
-  id String @id @default(uuid())
-  sugestion Sugestion
-  user User
-  status SugestionStatus
+  id          String    @id @default(uuid())
+  sugestion   Sugestion @relation(fields: [sugestionId], references: [id])
+  user        User      @relation(name: "UserSugestions", fields: [userId], references: [id])
+  status      String
+  sugestionId String
+  userId      String
 }
 
 model Sugestion {
-  id String @id @default(uuid())
-  value String
-  reported Boolean
+  id            String          @id @default(uuid())
+  value         String
+  reported      Boolean
+  SugestionUser SugestionUser[]
 }
 
 model Activity {
-  id String @id @default(uuid())
-  name String
+  id          String          @id @default(uuid())
+  name        String
   description String
-  annex File[]
-  class File
+  annex       ActivityAnnex[] @relation(name: "ActivityAnnex")
+  course      Course          @relation(name: "CourseActivities", fields: [courseId], references: [id])
+  sclass      File            @relation(fields: [fileId], references: [id])
+  courseId    String
+  fileId      String
 }
 
 model Course {
-  id String @id @default(uuid())
-  name String
+  id          String            @id @default(uuid())
+  name        String
   description String
-  date DateTime
-  workload Int
-  audience Audience
-  teacher User
-  materials File[]
-  classes File[]
-  students User[]
-  activities Activity[]
-  reported Boolean
+  date        DateTime
+  workload    Int
+  audience    String
+  teacher     User              @relation(name: "UserCourses", fields: [userId], references: [id])
+  materials   CourseMaterials[] @relation(name: "CourseMaterials")
+  classes     CourseClasses[]   @relation(name: "CourseClasses")
+  students    User[]            @relation(name: "UserSubscriptions")
+  activities  Activity[]        @relation(name: "CourseActivities")
+  reported    Boolean
+  userId      String
 }
 
-enum SugestionStatus {
-  ACCEPT
-  DENY
-  WAITING
-}
+// enum SugestionStatus {
+//   ACCEPT
+//   DENY
+//   WAITING
+// }
 
-
-enum TipType {
-  PERSPECTIVE
-  SHAPES
-  ANATHOMY
-  COLOR
-  LIGHTANDSHADOW
-  OTHER
-}
- enum Audience {
-  BEGINNER 
-  INTERMEDIATE 
-  ADVANCED 
-  ALL 
-}
+// enum TipType {
+//   PERSPECTIVE
+//   SHAPES
+//   ANATHOMY
+//   COLOR
+//   LIGHTANDSHADOW
+//   OTHER
+// }
+//  enum Audience {
+//   BEGINNER 
+//   INTERMEDIATE 
+//   ADVANCED 
+//   ALL 
+// }
